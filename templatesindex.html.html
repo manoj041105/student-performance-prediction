@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Performance Predictor</title>
+  <style>
+    :root {
+      --ink: #0e1b2b;
+      --paper: #f4f7f6;
+      --accent: #3ec6c6;
+      --line: rgba(14, 27, 43, 0.14);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      padding: 48px 20px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      max-width: 560px;
+      width: 100%;
+      padding: 32px 36px 36px;
+      box-shadow: 0 8px 30px rgba(14, 27, 43, 0.06);
+    }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    p.sub { margin: 0 0 24px; color: #556; font-size: 14px; }
+    .row { display: flex; gap: 14px; margin-bottom: 14px; }
+    .field { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #556; }
+    input, select {
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background: var(--accent); color: var(--ink); }
+    .result {
+      margin-top: 24px;
+      padding: 18px 20px;
+      border-radius: 12px;
+      background: #eafaf7;
+      border-left: 4px solid var(--accent);
+    }
+    .result .score { font-size: 36px; font-weight: 700; }
+    .error {
+      margin-top: 24px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: #fdeeee;
+      border-left: 4px solid #d64545;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Student Performance Predictor</h1>
+    <p class="sub">Enter a student's details to predict their final score out of 100.</p>
+
+    <form method="POST">
+      <div class="row">
+        <div class="field">
+          <label for="study_hours_per_week">Study hours / week</label>
+          <input type="number" step="0.1" min="0" max="40" id="study_hours_per_week" name="study_hours_per_week" value="{{ values.study_hours_per_week }}" required>
+        </div>
+        <div class="field">
+          <label for="attendance_rate">Attendance rate (%)</label>
+          <input type="number" step="0.1" min="0" max="100" id="attendance_rate" name="attendance_rate" value="{{ values.attendance_rate }}" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="previous_gpa">Previous GPA (0-4)</label>
+          <input type="number" step="0.01" min="0" max="4" id="previous_gpa" name="previous_gpa" value="{{ values.previous_gpa }}" required>
+        </div>
+        <div class="field">
+          <label for="sleep_hours">Sleep hours / night</label>
+          <input type="number" step="0.1" min="0" max="14" id="sleep_hours" name="sleep_hours" value="{{ values.sleep_hours }}" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="parental_support">Parental support</label>
+          <select id="parental_support" name="parental_support">
+            {% for opt in ["Low", "Medium", "High"] %}
+              <option value="{{ opt }}" {% if values.parental_support == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender">
+            {% for opt in ["Female", "Male"] %}
+              <option value="{{ opt }}" {% if values.gender == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="extracurricular">Extracurricular activities</label>
+          <select id="extracurricular" name="extracurricular">
+            {% for opt in ["Yes", "No"] %}
+              <option value="{{ opt }}" {% if values.extracurricular == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="part_time_job">Part-time job</label>
+          <select id="part_time_job" name="part_time_job">
+            {% for opt in ["Yes", "No"] %}
+              <option value="{{ opt }}" {% if values.part_time_job == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <button type="submit">Predict final score</button>
+    </form>
+
+    {% if prediction is not none %}
+    <div class="result">
+      <div>Predicted final score</div>
+      <div class="score">{{ prediction }} / 100</div>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>
